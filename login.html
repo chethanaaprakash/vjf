@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VendorMart</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: #fefefe;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      font-size: 2.5rem;
+      color: #675d75;
+      margin-bottom: 30px;
+    }
+    form {
+      text-align: center;
+    }
+    input[type="text"], input[type="password"] {
+      padding: 10px;
+      margin: 10px;
+      width: 250px;
+      font-size: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+    }
+    .btn, .role-btn {
+      background: #f8e8ee;
+      border: 2px solid #ffd5ec;
+      border-radius: 15px;
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      color: #5a3e4d;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .btn:hover, .role-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .options {
+      display: flex;
+      gap: 40px;
+      margin-top: 20px;
+    }
+    .role-btn i {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .toggle-link {
+      margin-top: 10px;
+      color: #5a3e4d;
+      cursor: pointer;
+      font-size: 0.95rem;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Section -->
+  <div id="login-section">
+    <h1>🔐 Login to VendorMart</h1>
+    <form onsubmit="handleLogin(event)">
+      <input type="text" id="login-username" placeholder="Username" required><br>
+      <input type="password" id="login-password" placeholder="Password" required><br>
+      <button class="btn" type="submit">Login</button>
+    </form>
+    <div class="toggle-link" onclick="showSignUp()">Don't have an account? Sign up</div>
+    <div class="toggle-link" onclick="forgotUsername()">Forgot Username?</div>
+    <div class="toggle-link" onclick="forgotPassword()">Forgot Password?</div>
+  </div>
+
+  <!-- Sign Up Section -->
+  <div id="signup-section" style="display: none;">
+    <h1>📝 Sign Up for VendorMart</h1>
+    <form onsubmit="handleSignUp(event)">
+      <input type="text" id="signup-username" placeholder="Choose Username" required><br>
+      <input type="password" id="signup-password" placeholder="Choose Password" required><br>
+      <button class="btn" type="submit">Sign Up</button>
+    </form>
+    <div class="toggle-link" onclick="showLogin()">Already have an account? Login</div>
+  </div>
+
+  <!-- Role Selection Section -->
+  <div id="role-section" style="display: none;">
+    <h1>🌸 Choose Your Role</h1>
+    <form method="POST">
+      <div class="options">
+        <button type="submit" name="role" value="buy" class="role-btn">
+          <i class="fas fa-shopping-basket"></i>Buy
+        </button>
+        <button type="submit" name="role" value="sell" class="role-btn">
+          <i class="fas fa-store"></i>Sell
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function getUsers() {
+      const users = localStorage.getItem("users");
+      return users ? JSON.parse(users) : {};
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem("users", JSON.stringify(users));
+    }
+
+    function showSignUp() {
+      document.getElementById("login-section").style.display = "none";
+      document.getElementById("signup-section").style.display = "block";
+    }
+
+    function showLogin() {
+      document.getElementById("signup-section").style.display = "none";
+      document.getElementById("login-section").style.display = "block";
+    }
+
+    function handleSignUp(event) {
+      event.preventDefault();
+      const username = document.getElementById("signup-username").value.trim();
+      const password = document.getElementById("signup-password").value.trim();
+
+      let users = getUsers();
+
+      if (users[username]) {
+        alert("Username already exists. Try logging in.");
+        return;
+      }
+
+      users[username] = password;
+      saveUsers(users);
+
+      alert("Signup successful! Please log in.");
+      showLogin();
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const username = document.getElementById("login-username").value.trim();
+      const password = document.getElementById("login-password").value.trim();
+
+      let users = getUsers();
+
+      if (users[username] && users[username] === password) {
+        document.getElementById("login-section").style.display = "none";
+        document.getElementById("role-section").style.display = "block";
+      } else {
+        alert("Invalid username or password.");
+      }
+    }
+
+    function forgotPassword() {
+      const username = prompt("Enter your username:");
+      if (!username) return;
+
+      const users = getUsers();
+      if (users[username]) {
+        alert("Your password is: " + users[username]);
+      } else {
+        alert("Username not found.");
+      }
+    }
+
+    function forgotUsername() {
+      const password = prompt("Enter your password:");
+      if (!password) return;
+
+      const users = getUsers();
+      const username = Object.keys(users).find(key => users[key] === password);
+
+      if (username) {
+        alert("Your username is: " + username);
+      } else {
+        alert("No username found for the entered password.");
+      }
+    }
+  </script>
+
+</body>
+</html>
